@@ -1,0 +1,24 @@
+{
+  "name": "my-love-app",
+  "version": "1.0.0",
+  "description": "App for my life",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kinnitchi/my-love-app.git"
+  },
+  "author": "@kinnitchi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Kinnitchi/my-love-app/issues"
+  },
+  "homepage": "https://github.com/Kinnitchi/my-love-app#readme",
+  "dependencies": {
+    "next": "13.1",
+    "react": "18.2",
+    "react-dom": "18.2"
+  }
+}
