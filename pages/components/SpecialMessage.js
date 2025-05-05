@@ -1,62 +1,191 @@
+import React, { useState, useRef, useEffect } from 'react';
+import ImageCarousel from './ImageCarousel';
+import TerminalTypewriter from './TerminalTypewriter';
+
 function SpecialMessage() {
+  const [showStopButton, setShowStopButton] = useState(false);
+  const [terminalDone, setTerminalDone] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+  const [carouselIndex, setCarouselIndex] = useState(0);
+  const [isTyping, setIsTyping] = useState(false);
+  const audioRef = useRef(null);
+  const images = [
+    'aliancas.jpeg',
+    'autodromo.jpeg',
+    'autodromo2.jpeg',
+    'autodromo3.jpeg',
+    'jantar.jpeg',
+  ];
+
+  useEffect(() => {
+    audioRef.current = new Audio('/audio/Luisa_Sonza_Iguaria.mp3');
+    audioRef.current.volume = 0.02;
+    const prefersDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setDarkMode(prefersDarkMode);
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
+
+
   const runCode = () => {
-    console.log("audio");
-    var audio = new Audio('/audios/Luisa_Sonza_Iguaria.mp3'); // Corrected path
-    debugger;
-    audio.volume = 0.03; // Set volume to 50%
-    audio.play();
-    if (igor + giovanna) return true;
+    if (audioRef.current) {
+      setShowStopButton(true);
+      setTerminalDone(false);
+      setIsTyping(true);
+      setCarouselIndex(0);
+      audioRef.current.play();
+    }
   };
 
+  const stopCode = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setShowStopButton(false);
+      setTerminalDone(false);
+      setIsTyping(false);
+      setCarouselIndex(0);
+    }
+  };
+  // Carrossel de imagens automático só quando terminalDone
+  useEffect(() => {
+    let interval;
+    if (terminalDone && showStopButton) {
+      interval = setInterval(() => {
+        setCarouselIndex((prev) => (prev + 1) % images.length);
+      }, 3000);
+    } else {
+      setCarouselIndex(0);
+    }
+    return () => interval && clearInterval(interval);
+  }, [terminalDone, showStopButton, images.length]);
+
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
+
+  const backgroundColor = darkMode ? 'rgb(33,33,33)' : 'rgb(255, 255, 255)';
+  const textColor = darkMode ? '#e0e0e0' : '#333';
+  const subtextColor = darkMode ? '#a1a1a1' : '#313131';
+  const codeBackgroundColor = darkMode ? '#1e1e1e' : '#282c34';
+
   return (
-    <div style={{
-      padding: '20px',
-      border: '1px solid #ccc',
-      borderRadius: '10px',
-      backgroundColor: '#fff',
-      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-    }}>
-      <h1 style={{ color: '#333' }}>Para alguém especial</h1>
-      <p style={{ color: '#555', fontSize: '18px' }}>
+    <div
+      className='special-message'
+      style={{
+        border: '1px solid ' + (darkMode ? '#444' : '#ccc'),
+        backgroundColor: backgroundColor,
+      }}>
+      <button
+        aria-label="Toggle dark mode"
+        title="Toggle dark mode"
+        className='dark-mode-toggle'
+        onClick={toggleDarkMode}
+      >
+        {darkMode ? '☀️' : '🌙'}
+      </button>
+
+      <h1 style={{ color: textColor }}>Eu te amo! ❤️</h1>
+      <p style={{ color: subtextColor, fontSize: '18px' }}>
         Você é a luz que ilumina meus dias e a razão do meu sorriso.
         <br />
         Obrigado por estar sempre ao meu lado. Amo você!
+        <br />
+        <br />
+        Isso é um pedacinho do meu amor por você, e eu espero que você goste! <br />
+        <br />
+        Você é a melhor parte de mim, e eu sou eternamente grato por ter você na minha vida.
+        <br />
       </p>
-      <h3>Meu codigo para voce: </h3>
-      <pre style={{
-        backgroundColor: '#282c34',
-        padding: '10px',
-        borderRadius: '5px',
-        fontSize: '16px',
-        color: '#61dafb', // Light blue for keywords
-        fontFamily: 'monospace', // Monospace font for code
-        overflowX: 'auto', // Horizontal scroll for long lines
-        height: '30vh', // Auto height for code block
-        fontFamily: "JetBrains Mono, monospace",
-        fontStyle: "italic",
-      }}>
-        <span style={{ color: '#fdad35' }}>const</span> <span style={{ color: '#F924E7' }}>Igor</span> = <span style={{ color: '#ff0' }}>"Igor Oliveira"</span>;
+      <h3 style={{ color: textColor }}>Meu codigo para voce: </h3>
+      <pre
+        style={{
+          backgroundColor: codeBackgroundColor,
+          padding: '16px',
+          borderRadius: '8px',
+          minHeight: '120px',
+          position: 'relative',
+          overflowX: 'auto',
+          fontSize: 'clamp(0.9rem, 2vw, 1.1rem)',
+          maxWidth: '100vw',
+        }}
+      >
+        <span className='const-style'>const</span> <span className='var-color'>Igor</span> = <span className='string-color'>"Igor Oliveira"</span>;
         <br />
-        <span style={{ color: '#fdad35' }}>const</span> <span style={{ color: '#F924E7' }}>Giovanna</span> = <span style={{ color: '#ff0' }}>"Giovanna Delibi"</span>;
+        <span className='const-style'>const</span> <span className='var-color'>Giovanna</span> = <span className='string-color'>"Giovanna Delibi"</span>;
         <br />
         <br />
-        <span style={{ color: '#fdad35' }}>if</span>(<span style={{ color: '#F924E7' }}>Igor</span> <span style={{ color: '#98c379' }}>❤️</span> <span style={{ color: '#F924E7' }}>Giovanna</span>) <span style={{ color: '#fdad35' }}>return</span> <span style={{ color: '#ea2f0f' }}>true</span>;
+        <span className='const-style'>if</span>(<span className='var-color'>Igor</span> ❤️ <span className='var-color'>Giovanna</span>) <span style={{ color: '#fede5d' }}>return</span> <span style={{ color: '#ea2f0f' }}>true</span>;
+        <br />
+        {/* TERMINAL */}
+        <div
+          className='terminal-output'
+          style={{
+            background: '#111',
+            color: '#39ff14',
+            fontFamily: 'monospace',
+            fontSize: 'clamp(1em, 2.5vw, 1.1em)',
+            marginTop: '18px',
+            padding: '16px',
+            borderRadius: '6px',
+            minHeight: '32px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+            marginTop: '16px',
+            textAlign: 'left',
+            letterSpacing: '1.5px',
+            width: '90%',
+            maxWidth: '100vw',
+            overflowX: 'auto',
+          }}
+        >
+          <span style={{ opacity: isTyping || terminalDone ? 1 : 0.5, minHeight: '32px', display: 'inline-block' }}>
+            {(!isTyping && !terminalDone) && 'Clique no botao Executar para rodar no terminal...'}
+            <TerminalTypewriter
+              text="eu te amo"
+              isActive={isTyping}
+              onDone={() => { setTerminalDone(true); setIsTyping(false); }}
+              style={{ color: '#39ff14', fontWeight: 600, fontSize: '1.2em', letterSpacing: '2px' }}
+            />
+            {terminalDone && (
+              <ImageCarousel
+                images={images}
+                currentIndex={carouselIndex}
+                setIndex={setCarouselIndex}
+                autoPlay={true}
+                interval={2000}
+              />
+            )}
+          </span>
+        </div>
+
       </pre>
       <button
         onClick={runCode}
+        className='run-button'
+        aria-label='Executar'
         style={{
-          marginTop: '20px',
-          padding: '10px 20px',
-          backgroundColor: '#007BFF',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '5px',
-          cursor: 'pointer',
-          fontSize: '16px',
+          backgroundColor: darkMode ? '#007bff' : '#007BFF',
+          display: showStopButton ? 'none' : 'inline-block',
         }}
+        id="runButton"
       >
-        Run Code
+        Executar
       </button>
+
+      <button
+        onClick={stopCode}
+        className='stop-button'
+        style={{ display: showStopButton ? 'inline-block' : 'none', }}
+        id="stopButton">
+        Parar
+      </button>
+
+
     </div>
   );
 }
