@@ -1,13 +1,17 @@
 import React, { useEffect } from 'react';
 
-export default function ImageCarousel({ images, currentIndex, setIndex, autoPlay = true, interval = 2000 }) {
+export default function ImageCarousel({ images = [], currentIndex = 0, setIndex = () => { }, autoPlay = true, interval = 2000 }) {
+  // Defensive: never run if images is not array or empty
+  const safeImages = Array.isArray(images) && images.length > 0 ? images : ["placeholder.png"];
+  const safeIndex = Math.max(0, Math.min(currentIndex, safeImages.length - 1));
+
   useEffect(() => {
-    if (!autoPlay) return;
+    if (!autoPlay || safeImages.length <= 1) return;
     const id = setInterval(() => {
-      setIndex((prev) => (prev + 1) % images.length);
+      setIndex((prev) => (prev + 1) % safeImages.length);
     }, interval);
     return () => clearInterval(id);
-  }, [autoPlay, interval, images.length, setIndex]);
+  }, [autoPlay, interval, safeImages.length, setIndex]);
 
   return (
     <div
@@ -29,8 +33,8 @@ export default function ImageCarousel({ images, currentIndex, setIndex, autoPlay
         }}
       >
         <img
-          src={`/images/${images[currentIndex]}`}
-          alt={`Especial ${currentIndex + 1}`}
+          src={`/images/${safeImages[safeIndex]}`}
+          alt={`Especial ${safeIndex + 1}`}
           style={{
             width: '100%',
             maxWidth: 400,
@@ -56,7 +60,7 @@ export default function ImageCarousel({ images, currentIndex, setIndex, autoPlay
           flexWrap: 'wrap',
         }}
       >
-        {images.map((_, idx) => (
+        {safeImages.map((_, idx) => (
           <span
             key={idx}
             style={{
@@ -64,7 +68,7 @@ export default function ImageCarousel({ images, currentIndex, setIndex, autoPlay
               width: 16,
               height: 16,
               borderRadius: '50%',
-              background: idx === currentIndex ? '#39ff14' : '#444',
+              background: idx === safeIndex ? '#39ff14' : '#444',
               transition: 'background 0.3s',
               cursor: 'pointer',
               marginBottom: 4,
