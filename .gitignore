@@ -59,16 +59,12 @@ jspm_packages/
 # Next.js build output
 .next/
 
-# Public assets
-public/audios/
-
 # Nuxt.js build / generate output
 .nuxt
 dist/
 
 # Gatsby files
 .cache/
-public/
 
 # vuepress build output
 .vuepress/dist
